@@ -1,0 +1,1073 @@
+SET-1
+#include <iostream>
+using namespace std;
+
+int partition(int arr[], int low, int high) {
+    int pivotIndex = high;  // Randomly choose a pivot index
+    int pivot = arr[pivotIndex];
+    
+    swap(arr[pivotIndex], arr[high]);  // Move the pivot element to the end
+    
+    int i = low;  // Index of smaller elements
+    for (int j = low; j < high; j++) {
+        if (arr[j] <= pivot) {
+            swap(arr[i], arr[j]);
+            i++;
+        }
+    }
+    
+    swap(arr[i], arr[high]);  // Move the pivot element to its sorted position
+    
+    return i;
+}
+
+int quickSelect(int arr[], int low, int high, int k) {
+    if (low == high) {
+        return arr[low];
+    }
+    
+    int pivotIndex = partition(arr, low, high);
+    
+    if (k == pivotIndex) {
+        return arr[k];
+    }
+    else if (k < pivotIndex) {
+        return quickSelect(arr, low, pivotIndex - 1, k);
+    }
+    else {
+        return quickSelect(arr, pivotIndex + 1, high, k);
+    }
+}
+
+int findKthSmallest(int arr[], int size, int k) {
+    if (k < 1 || k > size) {
+        return -1;  // Invalid k value
+    }
+    
+    return quickSelect(arr, 0, size - 1, k - 1);
+}
+
+int main() {
+    int arr[] = {7, 10, 4, 3, 20, 15};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    int k = 4;
+    int kthSmallest = findKthSmallest(arr, size, k);
+    cout << "The " << k << "th smallest element is: " << kthSmallest << endl;
+    return 0;
+}
+********************************************************************************
+#include <bits/stdc++.h>
+using namespace std;
+
+// To find the closest pair of points
+long closestPair(vector<pair<int, int> > coordinates, int n)
+{
+	int i;
+	// Vector pair to store points on plane
+	vector<pair<int, int> > v;
+	for (i = 0; i < n; i++)
+		v.push_back({ coordinates[i].first,
+					coordinates[i].second });
+
+	// Sort them according to their
+	// x-coordinates
+	sort(v.begin(), v.end());
+
+	// Minimum distance b/w points
+	// seen so far
+	long d = INT_MAX;
+
+	// Keeping the points in
+	// increasing order
+	set<pair<int, int> > st;
+	st.insert({ v[0].first, v[0].second });
+
+	for (i = 1; i < n; i++) {
+		auto l = st.lower_bound(
+			{ v[i].first - d, v[i].second - d });
+		auto r = st.upper_bound(
+			{ v[i].first, v[i].second + d });
+		if (l == st.end())
+			continue;
+
+		for (auto p = l; p != r; p++) {
+			pair<int, int> val = *p;
+			long dis = (v[i].first - val.first)
+						* (v[i].first - val.first)
+					+ (v[i].second - val.second)
+							* (v[i].second - val.second);
+
+			// Updating the minimum
+			// distance dis
+			if (d > dis)
+				d = dis;
+		}
+		st.insert({ v[i].first, v[i].second });
+	}
+
+	return d;
+}
+
+// Driver code
+int main()
+{
+
+	// Points on a plane P[i] = {x, y}
+	vector<pair<int, int> > P = {
+		{ 3,4 }, { 2, 3 }, { 1,2 }, { 5, 6 }, { 2, 1 }
+	};
+	int n = P.size();
+
+	// Function call
+	cout << "The smallest distance is "
+		<< closestPair(P, n);
+	return 0;
+}
+********************************************************************************
+SET-2
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void knapsack(int **k,int *p,int* w,int* l,int n,int m){
+    int x[n],sum=0;
+    int i = n;
+    int j = m;
+    while(i > 0){
+        if(k[i][j] == k[i-1][j])
+            x[i-1] = 0;
+        else{
+            x[i-1] = 1;
+            j -= w[i-1];
+        }
+        i--;
+    }
+    cout << "Solution : [";
+    for(int i = 0;i < n;i++){
+        cout<<x[i]<<" ";
+        if(x[i]==1){
+            sum+=p[i]-l[i];
+        }
+    }
+    cout << "\b]";
+    cout<<endl<<"Maximum Profit : "<<sum<<endl;
+}
+
+int main() {
+    int n,m;
+    cout <<"Enter no.of objects : ";
+    cin >> n;
+    cout << "Enter knapsack capacity : ";
+    cin >> m;
+    cout<<"Enter Weight,Profit and loss"<<endl;
+    int p[n],w[n],l[n];
+    int **k = new int*[n+1];
+    for(int i = 0;i < n+1;i++)
+        k[i] = new int[m+1];
+    for(int i = 0;i < n;i++){
+        cout << "For obj "<<i<<" : ";
+        cin >> w[i] >> p[i]>>l[i];
+    }
+    for(int i = 0;i <= n;i++){
+        for(int j = 0;j <= m;j++){
+            if(i==0 || j==0)
+                k[i][j] = 0;
+            else if(w[i-1] > j) 
+                k[i][j] = k[i-1][j];
+            else
+                k[i][j] = max(k[i-1][j],k[i-1][j-w[i-1]] + p[i-1]-l[i-1]);
+        }
+    }
+    knapsack(k,p,w,l,n,m);
+    return 0;
+}
+********************************************************************************
+SET-3
+#include<stdio.h>
+#include<string.h>
+
+int max (int x, int y) { return (x > y)? x : y; }
+
+int lps(char *str)
+{
+int n = strlen(str);
+int i, j, cl;
+int L[n][n]; 
+
+for (i = 0; i < n; i++)
+	L[i][i] = 1;
+
+	for (cl=2; cl<=n; cl++)
+	{
+		for (i=0; i<n-cl+1; i++)
+		{
+			j = i+cl-1;
+			if (str[i] == str[j] && cl == 2)
+			L[i][j] = 2;
+			else if (str[i] == str[j])
+			L[i][j] = L[i+1][j-1] + 2;
+			else
+			L[i][j] = max(L[i][j-1], L[i+1][j]);
+		}
+	}
+
+	return L[0][n-1];
+}
+int main()
+{
+	char seq[] = "GEEKSFORGEEKS";
+	int n = strlen(seq);
+	printf ("The length of the LPS is %d", lps(seq));
+	//getchar();
+	return 0;
+}
+                                          or
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+int max(int x, int y) { return (x > y) ? x : y; }
+
+void printLPS(char *str, int i, int j, int **L)
+{
+    if (i > j)
+        return;
+
+    if (i == j)
+    {
+        cout << str[i];
+        return;
+    }
+
+    if (str[i] == str[j])
+    {
+        cout << str[i];
+        printLPS(str, i + 1, j - 1, L);
+        cout << str[j];
+    }
+    else
+    {
+        if (L[i + 1][j] >= L[i][j - 1])
+            printLPS(str, i + 1, j, L);
+        else
+            printLPS(str, i, j - 1, L);
+    }
+}
+
+int lps(char *str, int n)
+{
+    int **L = new int *[n];
+    for (int i = 0; i < n; i++)
+        L[i] = new int[n];
+
+    for (int i = 0; i < n; i++)
+        L[i][i] = 1;
+
+    for (int cl = 2; cl <= n; cl++)
+    {
+        for (int i = 0; i < n - cl + 1; i++)
+        {
+            int j = i + cl - 1;
+            if (str[i] == str[j] && cl == 2)
+                L[i][j] = 2;
+            else if (str[i] == str[j])
+                L[i][j] = L[i + 1][j - 1] + 2;
+            else
+                L[i][j] = max(L[i + 1][j], L[i][j - 1]);
+        }
+    }
+
+    cout << "The longest palindromic subsequence is: ";
+    printLPS(str, 0, n - 1, L);
+    cout << endl;
+
+    int result = L[0][n - 1];
+
+    for (int i = 0; i < n; i++)
+        delete[] L[i];
+    delete[] L;
+
+    return result;
+}
+
+int main()
+{
+    char seq[100];
+    cin >> seq;
+    int n = strlen(seq);
+    cout << "The length of the LPS is: " << lps(seq, n) << endl;
+    return 0;
+}
+********************************************************************************
+SET-4
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+void countLegalPatterns(const vector<vector<int>>& board, int n) {
+    vector<int> patterns(4, 0); // Initialize pattern counts for each row
+
+    for (int j = 0; j < n; j++) {
+        int count = 0;
+
+        // Pattern 1: No pebbles
+        count++;
+
+        // Pattern 2: One pebble in each row
+        count += 4;
+
+        // Pattern 3: Two pebbles in different rows
+        count += 6;
+
+        // Pattern 4: Three pebbles in different rows
+        count += 4;
+
+        // Pattern 5: Four pebbles in different rows (if unique values)
+        if (board[0][j] != board[1][j] && board[0][j] != board[2][j] && board[0][j] != board[3][j] &&
+            board[1][j] != board[2][j] && board[1][j] != board[3][j] && board[2][j] != board[3][j]) {
+            count++;
+        }
+
+        patterns.push_back(count);
+    }
+
+    // Print the number of legal patterns in each column
+    for (int j = 0; j < n; j++) {
+        cout << "Column " << j + 1 << ": " << patterns[j] << " legal patterns" << endl;
+    }
+}
+
+int main() {
+    int n = 5;  // Number of columns
+
+    vector<vector<int>> board = {
+        {2, 3, 4, 5, 6},
+        {7, 8, 9, 1, 2},
+        {3, 4, 5, 6, 7},
+        {8, 9, 1, 2, 3}
+    };
+
+    countLegalPatterns(board, n);
+
+    return 0;
+}
+********************************************************************************
+SET-5
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+bool dict(const string& word) {
+    // Implementation of the dictionary function
+    // Replace with your own dictionary function implementation
+    // Returns true if word is a valid word, false otherwise
+    // Assumes it takes constant time
+    // Example implementation:
+    vector<string> validWords = {"it", "was", "the", "best", "night", "ever"};
+    return find(validWords.begin(), validWords.end(), word) != validWords.end();
+}
+
+bool isValidReconstruction(const string& s) {
+    int n = s.length();
+    vector<bool> dp(n + 1, false);
+    dp[0] = true;
+
+    for (int i = 1; i <= n; i++) {
+        for (int j = i - 1; j >= 0; j--) {
+            if (dp[j] && dict(s.substr(j, i - j))) {
+                dp[i] = true;
+                break;
+            }
+        }
+    }
+
+    return dp[n];
+}
+
+vector<string> getWordSequence(const string& s) {
+    vector<string> words;
+    int n = s.length();
+    int end = n;
+
+    for (int start = n - 1; start >= 0; start--) {
+        if (dict(s.substr(start, end - start))) {
+            words.push_back(s.substr(start, end - start));
+            end = start;
+        }
+    }
+
+    reverse(words.begin(), words.end());
+    return words;
+}
+
+int main() {
+    string s = "itwasthebestnightever";
+
+    if (isValidReconstruction(s)) {
+        vector<string> wordSequence = getWordSequence(s);
+        cout << "Valid word sequence: ";
+        for (const string& word : wordSequence) {
+            cout << word << " ";
+        }
+        cout << endl;
+    } else {
+        cout << "No valid reconstruction possible." << endl;
+    }
+
+    return 0;
+}
+********************************************************************************
+SET-6
+#include <bits/stdc++.h>
+using namespace std;
+
+long long maxSubarraySum(int arr[], int n) {
+    long long maxi = LONG_MIN; // maximum sum
+    long long sum = 0;
+
+    int start = 0;
+    int ansStart = -1, ansEnd = -1;
+    for (int i = 0; i < n; i++) {
+
+        if (sum == 0) start = i; // starting index
+
+        sum += arr[i];
+
+        if (sum > maxi) {
+            maxi = sum;
+
+            ansStart = start;
+            ansEnd = i;
+        }
+
+        // If sum < 0: discard the sum calculated
+        if (sum < 0) {
+            sum = 0;
+        }
+    }
+
+    //printing the subarray:
+    cout << "The subarray is: [";
+    for (int i = ansStart; i <= ansEnd; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << "]\n";
+
+    // To consider the sum of the empty subarray
+    // uncomment the following check:
+
+    //if (maxi < 0) maxi = 0;
+
+    return maxi;
+}
+
+int main()
+{
+    int arr[] = { -2, 1, -3, 4, -1, 2, 1, -5, 4};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    long long maxSum = maxSubarraySum(arr, n);
+    cout << "The maximum subarray sum is: " << maxSum << endl;
+    return 0;
+}
+********************************************************************************
+SET-7
+#include <iostream>
+#include <vector>
+
+int yuckdonalds(const std::vector<int>& m, const std::vector<int>& p, int k) {
+    std::vector<int> T(p.size(), 0);
+
+    for (int i = 0; i < m.size(); i++) {
+        T[i] = p[i];
+        for (int j = i - 1; j >= 0; j--) {
+            if (m[i] - m[j] >= k) {
+                T[i] = std::max(T[i], p[i] + T[j]);
+            }
+        }
+        T[i] = std::max(T[i], (i > 0) ? T[i - 1] : 0);
+    }
+
+    return T.back();
+}
+
+int main() {
+    vector<int> m = {0, 5, 6, 11, 14, 20, 22, 28};
+    vector<int> p = {30, 10, 40, 1, 15, 5, 23, 17};
+    int k = 5;
+    cout << "m = ";
+    for (int i : m) {
+        cout << i << " ";
+    }
+    cout <<endl;
+    cout << "p = ";
+    for (int i : p) {
+        cout << i << " ";
+    }
+    cout << endl;
+    cout << "k = " << k << endl;
+    int p_ = yuckdonalds(m, p, k);
+    cout << "Maximum total profit = " << p_ << endl;
+
+    m = {1, 10, 16, 21, 22, 35, 38};
+    p = {30, 9, 13, 25, 23, 3, 10};
+    k = 10;
+    std::cout << "m = ";
+    for (int i : m) {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "p = ";
+    for (int i : p) {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "k = " << k << std::endl;
+    p_ = yuckdonalds(m, p, k);
+    std::cout << "Maximum total profit = " << p_ << std::endl;
+
+    m = {10, 20, 25, 30, 40};
+    p = {100, 100, 101, 100, 100};
+    k = 10;
+    std::cout << "m = ";
+    for (int i : m) {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "p = ";
+    for (int i : p) {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "k = " << k << std::endl;
+    p_ = yuckdonalds(m, p, k);
+    std::cout << "Maximum total profit = " << p_ << std::endl;
+
+    m = {0, 4, 8};
+    p = {10, 42, 31};
+    k = 5;
+    std::cout << "m = ";
+    for (int i : m) {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "p = ";
+    for (int i : p) {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "k = " << k << std::endl;
+    p_ = yuckdonalds(m, p, k);
+    std::cout << "Maximum total profit = " << p_ << std::endl;
+
+    return 0;
+}
+********************************************************************************
+SET-8
+#include <iostream>
+
+#define MAX_SIZE 6
+
+void printArray(int arr[], int start, int end) {
+    for (int i = start; i <= end; i++) {
+        std::cout << arr[i] << " ";
+    }
+    std::cout << std::endl;
+}
+
+void optimalBST(int n, int p[], int q[]) {
+    int c[MAX_SIZE][MAX_SIZE] = {0};
+    int w[MAX_SIZE][MAX_SIZE] = {0};
+    int r[MAX_SIZE][MAX_SIZE] = {0};
+
+    for (int i = 0; i < n; i++) {
+        w[i][i] = q[i];
+        r[i][i] = 0;
+        c[i][i] = 0;
+
+        w[i][i + 1] = q[i] + p[i + 1] + q[i + 1];
+        r[i][i + 1] = i + 1;
+        c[i][i + 1] = q[i] + p[i + 1] + q[i + 1];
+    }
+
+    for (int m = 2; m <= n; m++) {
+        for (int i = 0; i <= n - m; i++) {
+            int j = i + m;
+            w[i][j] = p[j] + q[j] + w[i][j - 1];
+            int minimum = 9999;
+            for (int l = i + 1; l <= j; l++) {
+                if ((c[i][l - 1] + c[l][j]) < minimum) {
+                    minimum = c[i][l - 1] + c[l][j];
+                    r[i][j] = l;
+                }
+            }
+            c[i][j] = w[i][j] + c[i][r[i][j] - 1] + c[r[i][j]][j];
+        }
+    }
+
+    for (int i = 0; i < n + 1; i++) {
+        for (int j = 0; j < n - i + 1; j++) {
+            int k = j + i;
+            std::cout << "w[" << j << "][" << k << "] = " << w[j][k] << " | ";
+        }
+        std::cout << std::endl;
+        for (int j = 0; j < n - i + 1; j++) {
+            int k = j + i;
+            std::cout << "c[" << j << "][" << k << "] = " << c[j][k] << " | ";
+        }
+        std::cout << std::endl;
+        for (int j = 0; j < n - i + 1; j++) {
+            int k = j + i;
+            std::cout << "r[" << j << "][" << k << "] = " << r[j][k] << " | ";
+        }
+        std::cout << std::endl;
+        std::cout << std::string((n - i + 1) * 15, '-') << std::endl;
+    }
+}
+
+int main() {
+    int n = 4;
+    int p[MAX_SIZE] = {0, 3, 3, 1, 1};
+    int q[MAX_SIZE] = {2, 3, 1, 1, 1};
+
+    optimalBST(n, p, q);
+
+    return 0;
+}
+*****************************************************
+SET-9
+#include <iostream>
+#include <vector>
+#include <stdlib.h>
+using namespace std;
+
+int* x;
+int n;
+
+bool Place(int k,int i){
+    for(int j = 0;j < k;j++){
+        if((x[j] == i) || (abs(x[j] - i) == abs(j -k)))
+            return false;
+    }
+    return true;
+}
+
+void print(){
+    static int i = 1;
+    if(i == 1) cout <<"----------Printing Solutions---------"<<endl;
+    cout<<"Solution "<<i++<<" : [";
+    for(int i = 0;i < n;i++)
+        cout<<x[i]<<" ";
+    cout<<"\b]"<<endl;
+}
+
+void NQueens(int k){
+    for(int i = 0;i < n;i++){
+        if(Place(k,i)){
+            x[k] = i;
+            if(k == n-1)
+                print();
+            else NQueens(k+1);
+        }
+    }
+}
+
+int main()
+{
+    cout << "Enter size of board : ";
+    cin >> n;
+    x = (int*)calloc(n,sizeof(int));
+    NQueens(0);
+}
+********************************************************************************
+#include <iostream>
+using namespace std;
+void merge(int arr[], int p, int q, int r) {
+
+  int n1 = q - p + 1;
+  int n2 = r - q;
+
+  int L[n1], M[n2];
+
+  for (int i = 0; i < n1; i++)
+    L[i] = arr[p + i];
+  for (int j = 0; j < n2; j++)
+    M[j] = arr[q + 1 + j];
+
+  int i, j, k;
+  i = 0;
+  j = 0;
+  k = p;
+
+
+  while (i < n1 && j < n2) {
+    if (L[i] <= M[j]) {
+      arr[k] = L[i];
+      i++;
+    } else {
+      arr[k] = M[j];
+      j++;
+    }
+    k++;
+  }
+
+
+  while (i < n1) {
+    arr[k] = L[i];
+    i++;
+    k++;
+  }
+
+  while (j < n2) {
+    arr[k] = M[j];
+    j++;
+    k++;
+  }
+}
+
+
+void mergeSort(int arr[], int l, int r) {
+  if (l < r) {
+
+
+    int m = l + (r - l) / 2;
+
+    mergeSort(arr, l, m);
+    mergeSort(arr, m + 1, r);
+
+
+    merge(arr, l, m, r);
+  }
+}
+
+
+void printArray(int arr[], int size) {
+  for (int i = 0; i < size; i++)
+    cout<< arr[i]<<" ";
+    cout<<"\n";
+}
+
+
+int main() {
+  int arr[] = {6, 5, 12, 10, 9, 1};
+  int size = sizeof(arr) / sizeof(arr[0]);
+
+  mergeSort(arr, 0, size - 1);
+
+  cout<<"Sorted array: \n";
+  printArray(arr, size);
+}
+********************************************************************************
+SET-10
+#include <bits/stdc++.h>
+using namespace std;
+
+void sum_of_subsets(vector<int>& nums, vector<int>& subset, int index, int target, int& sum) {
+    if (index == nums.size()) {
+        if (target == 0) {
+            for (int num : subset)
+                cout << num << " ";
+            cout << endl;
+            sum ++;
+        }
+        return;
+    }
+    subset.push_back(nums[index]);
+    sum_of_subsets(nums, subset, index+1, target-nums[index], sum);
+    subset.pop_back();
+    sum_of_subsets(nums, subset, index+1, target, sum);
+}
+
+int main() {
+    vector<int> nums;
+    int target, n;
+    cout << "Enter Array Size and Target Value: ";
+    cin >> n >>target;
+    cout << "Enter " << n << " Array Elements: " << endl;
+    for(int i = 0; i < n; i++){
+        int temp;
+        cin >> temp;
+        nums.push_back(temp);
+    }
+    vector<int> subset;
+    int sum = 0;
+    sum_of_subsets(nums, subset, 0, target, sum);
+    cout << "Number of subsets: " << sum << endl;
+    return 0;
+}
+********************************************************************************
+#include <iostream>
+#include<fstream>
+using namespace std;
+
+int partition(int arr[], int start, int end)
+{
+	int pivot = arr[start];
+	int count = 0;
+	for (int i = start + 1; i <= end; i++) {
+		if (arr[i] <= pivot)
+			count++;
+	}
+	int pivotIndex = start + count;
+	swap(arr[pivotIndex], arr[start]);
+	int i = start, j = end;
+	while (i < pivotIndex && j > pivotIndex) {
+		while (arr[i] <= pivot)
+			i++;
+		while (arr[j] > pivot)
+			j--;
+		if (i < pivotIndex && j > pivotIndex)
+			swap(arr[i++], arr[j--]);
+	}
+	return pivotIndex;
+}
+
+void quickSort(int arr[], int start, int end)
+{
+
+	if (start >= end)
+		return;
+	int p = partition(arr, start, end);
+	quickSort(arr, start, p - 1);
+	quickSort(arr, p + 1, end);
+}
+
+int main()
+{
+	int data[] = {8, 7, 2, 1, 0, 9, 6};
+  int n = sizeof(data) / sizeof(data[0]);
+  cout<<"Unsorted Array\n";
+  for(int i=0;i<n;i++)
+    cout<<data[i]<<" ";
+    cout<<endl;
+  quickSort(data, 0, n - 1);
+  cout<<"Sorted array in ascending order: \n";
+  for(int i=0;i<n;i++)
+    cout<<data[i]<<" ";
+}
+********************************************************************************
+SET-11
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int n;
+vector<int> x;
+vector<vector<int>> g;
+
+void Hamiltonian(int k);
+
+void NextValue(int k) {
+    while (true) {
+        x[k] = (x[k] + 1) % n;
+        if (x[k] == 0)
+            return;
+        if (g[x[k - 1]][x[k]] != 0) {
+            for (int j = 0; j < k; j++) {
+                if (x[j] == x[k])
+                    break;
+                if ((j + 1) == k) {
+                    if ((k < n - 1) || ((k == n - 1) && g[x[n - 1]][x[0]] != 0))
+                        return;
+                }
+            }
+        }
+    }
+}
+
+void Hamiltonian(int k) {
+    while (true) {
+        NextValue(k);
+        if (x[k] == 0)
+            return;
+        if (k == n - 1) {
+            for (int i = 0; i < n; i++)
+                cout << x[i] << " ";
+            cout << endl;
+        } else {
+            Hamiltonian(k + 1);
+        }
+    }
+}
+
+int main() {
+    cout << "Enter the number of nodes in the graph: ";
+    cin >> n;
+    
+    x.resize(n, 0);
+    g.resize(n, vector<int>(n, 0));
+    
+    cout << "Enter the adjacency matrix:" << endl;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> g[i][j];
+        }
+    }
+    
+    Hamiltonian(1);
+    
+    return 0;
+}
+********************************************************************************
+SET-12
+#include<iostream>
+using namespace std;
+void bellManFord(int a[][3],int edges,int vertices){
+ int d[vertices]={999};
+ d[0]=0;
+ for(int i=1;i<vertices;i++){
+ d[i]=999;
+ }
+ for(int i=0;i<vertices;i++){
+ for(int j=0;j<edges;j++){
+ if(d[a[j][0]]!=999 && d[a[j][0]]+a[j][2] < d[a[j][1]]){
+ d[a[j][1]] = d[a[j][0]]+a[j][2];
+ }
+ }
+ }
+ for(int i=0;i<vertices;i++){
+ cout<<d[i]<<" ";
+ }
+}
+int main(){
+ int vertices,edges;
+ cout<<"Enter no of vertices and edges in the graph : \t";
+ cin>>vertices>>edges;
+ cout<<"Enter source node\t\tdestination node\t\tedge Weigth\n";
+ int a[edges][3];
+ for(int i=0;i<edges;i++){
+ for(int j=0;j<3;j++){
+
+ cin>>a[i][j];
+ }
+ }
+ bellManFord(a,edges,vertices);
+ return 0;
+}
+********************************************************************************
+SET-13
+#include <bits/stdc++.h>
+using namespace std;
+
+struct MinHeapNode {
+	char data;
+	unsigned freq;
+	MinHeapNode *left, *right;
+
+	MinHeapNode(char data, unsigned freq)
+
+	{
+
+		left = right = NULL;
+		this->data = data;
+		this->freq = freq;
+	}
+};
+struct compare {
+
+	bool operator()(MinHeapNode* l, MinHeapNode* r)
+
+	{
+		return (l->freq > r->freq);
+	}
+};
+
+void printCodes(struct MinHeapNode* root, string str)
+{
+
+	if (!root)
+		return;
+
+	if (root->data != '$')
+		cout << root->data << ": " << str << "\n";
+
+	printCodes(root->left, str + "0");
+	printCodes(root->right, str + "1");
+}
+
+void HuffmanCodes(char data[], int freq[], int size)
+{
+	struct MinHeapNode *left, *right, *top;
+	priority_queue<MinHeapNode*, vector<MinHeapNode*>,compare> minHeap; 
+
+	for (int i = 0; i < size; ++i)
+		minHeap.push(new MinHeapNode(data[i], freq[i]));
+	while (minHeap.size() != 1) {
+		left = minHeap.top();
+		minHeap.pop();
+
+		right = minHeap.top();
+		minHeap.pop();
+
+		top = new MinHeapNode('$',
+							left->freq + right->freq);
+
+		top->left = left;
+		top->right = right;
+
+		minHeap.push(top);
+	}
+	printCodes(minHeap.top(), "");
+}
+int main()
+{
+
+	char arr[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
+	int freq[] = { 5, 9, 12, 13, 16, 45 };
+
+	int size = sizeof(arr) / sizeof(arr[0]);
+
+	HuffmanCodes(arr, freq, size);
+
+	return 0;
+}
+********************************************************************************
+SET-14
+#include<iostream>
+using namespace std;
+int a[100],maxm,minm;
+void maxmin(int a[],int i,int j){
+    int mid,max1,min1;
+    if(i==j){
+        maxm=minm=a[i];
+    }
+    else if(i==j-1){
+        if(a[i]<a[j]){
+            minm=a[i];
+            maxm=a[j];
+        }
+        else{
+            minm=a[j];
+            maxm=a[i];
+        }
+    }
+    else{
+        mid=(i+j)/2;
+        maxmin(a,i,mid);
+        max1=maxm;
+        min1=minm;
+        maxmin(a,mid+1,j);
+        if(maxm<max1)
+            maxm=max1;
+        if(minm>min1)
+            minm=min1;
+    }
+}
+
+int main(){
+    int n,j,i;
+    cout<<"Enter N:";
+    cin>>n;
+    cout<<"Enter the elements:"<<endl;
+    for(i=0;i<n;i++)
+        cin>>a[i];
+    maxm=a[0];
+    minm=a[0];
+    maxmin(a,0,n-1);
+    cout<<"max:"<<maxm<<endl;
+    cout<<"min:"<<minm<<endl;
+}
+*****************************************************
